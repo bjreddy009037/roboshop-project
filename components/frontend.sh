@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+source components/common.sh
+checkRootUser
 yum install nginx -y
 curl -s -L -o /tmp/frontend.zip "https://github.com/roboshop-devops-project/frontend/archive/main.zip"
 cd /usr/share/nginx/html
