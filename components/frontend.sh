@@ -1,34 +1,42 @@
 #!/usr/bin/env bash
+
 source components/common.sh
 checkRootUser
-ECHO "installing nginx"
-yum install nginx -y &>>${LOG_FILE}
-statuschek $?
 
-ECHO"downloading frontend code"
-curl -s -L -o /tmp/frontend.zip "https://github.com/roboshop-devops-project/frontend/archive/main.zip"&>>${LOG_FILE}
-statuschek $?
+
+ECHO "Installing Nginx"
+yum install nginx -y &>>${LOG_FILE}
+statusCheck $?
+
+ECHO "Downloading Frontend Code"
+curl -s -L -o /tmp/frontend.zip "https://github.com/roboshop-devops-project/frontend/archive/main.zip" &>>${LOG_FILE}
+statusCheck $?
 
 cd /usr/share/nginx/html
 
-ECHO "removing old files"
+ECHO "Removing Old Files"
 rm -rf * &>>${LOG_FILE}
-statuschek $?
+statusCheck $?
 
-ECHO "extracting zip content"
+ECHO "Extracting Zip Content"
 unzip /tmp/frontend.zip &>>${LOG_FILE}
-statuschek $?
+statusCheck $?
 
-ECHO "copying extracted files"
+ECHO "Copying extracted Content"
 mv frontend-main/* . &>>${LOG_FILE} && mv static/* . &>>${LOG_FILE} && rm -rf frontend-main README.md &>>${LOG_FILE}
-statuschek $?
+statusCheck $?
 
-ECHO "copy roboshop nignx config "
+ECHO "Copy RoboShop Nginx Config"
 mv localhost.conf /etc/nginx/default.d/roboshop.conf &>>${LOG_FILE}
-statuschek $?
+statusCheck $?
 
-ECHO "update nginx configuration"
-systemctl enable nginx
-systemctl start nginx
-systemctl restart nginx
-statuschek $?
+ECHO "Update Nginx Configuration"
+for component in catalogue user cart shipping payment ; do
+  ECHO "Update Configuration for ${component}"
+  sed -i -e "/${component}/ s/localhost/${component}.roboshop.internal/"  /etc/nginx/default.d/roboshop.conf
+  statusCheck $?
+done
+
+ECHO "Start Nginx Service"
+systemctl enable nginx &>>${LOG_FILE} && systemctl restart nginx &>>${LOG_FILE}
+statusCheck $?
