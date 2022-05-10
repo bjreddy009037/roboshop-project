@@ -7,7 +7,6 @@ checkRootUser() {
   fi
 }
 
-
 statusCheck() {
   if [ $1 -eq 0 ]; then
     echo -e "\e[32mSUCCESS\e[0m"
