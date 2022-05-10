@@ -3,6 +3,7 @@
 source components/common.sh
 checkRootUser
 
+
 ECHO "Installing Nginx"
 yum install nginx -y &>>${LOG_FILE}
 statusCheck $?
