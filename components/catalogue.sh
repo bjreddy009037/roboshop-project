@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 
-echo catalogue
+source components/common.sh
+checkRootUser
+COMPONENT=catalogue
+NODEJS
